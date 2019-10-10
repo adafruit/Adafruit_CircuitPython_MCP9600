@@ -12,11 +12,11 @@ try:
     device = MCP9600(i2c,SENSOR_ADDR,"K")
     print("version:", device.version)
     while True:
-        print(
+        print((
             device.ambient_temperature,
             device.temperature,
             device.delta_temperature
-        )
+        ))
         time.sleep(1)
 except ValueError:
     print("MCP9600 sensor not detected")
