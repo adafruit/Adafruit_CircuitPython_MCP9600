@@ -1,7 +1,6 @@
+import time
 import board
 import busio
-import time
-from adafruit_bus_device.i2c_device import I2CDevice
 from adafruit_mcp9600 import MCP9600
 
 SENSOR_ADDR = 0x67
@@ -14,9 +13,9 @@ try:
     print("version:", device.version)
     while True:
         print(
-                device.ambient_temperature, 
-                device.hot_junction_temperature, 
-                device.delta_temperature
+            device.ambient_temperature,
+            device.hot_junction_temperature,
+            device.delta_temperature
         )
         time.sleep(1)
 except ValueError:
