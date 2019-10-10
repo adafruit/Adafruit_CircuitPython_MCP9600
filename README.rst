@@ -30,10 +30,8 @@ Usage Example
 =============
 
 This is a simple example showing the hot junction temperature (the
-temperature at the tip of the thermocouple). You will find another example
-in the examples folder.
-
-You may need to adjust the I2C frequency if you receive input/output errors.
+temperature at the tip of the thermocouple). You may need to adjust the 
+I2C frequency if you receive input/output errors.
 
 .. code-block:: shell
 
@@ -62,7 +60,6 @@ temperatures in a real-time graph.
     from adafruit_bus_device.i2c_device import I2CDevice
     from adafruit_mcp9600 import MCP9600
 
-    # try different frequency values if you get an i2c input/output error
     i2c = busio.I2C(board.SCL, board.SDA,frequency=200000)
 
     try:
