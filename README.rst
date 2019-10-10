@@ -13,7 +13,7 @@ Introduction
     :target: https://travis-ci.com/adafruit/Adafruit_CircuitPython_MCP9600
     :alt: Build Status
 
-CircuitPython library for the Adafruit MCP9600 breakout
+CircuitPython driver for the MCP9600 thermocouple I2C amplifier
 
 
 Dependencies
@@ -26,41 +26,10 @@ Please ensure all dependencies are available on the CircuitPython filesystem.
 This is easily achieved by downloading
 `the Adafruit library and driver bundle <https://github.com/adafruit/Adafruit_CircuitPython_Bundle>`_.
 
-Installing from PyPI
-=====================
-.. note:: This library is not available on PyPI yet. Install documentation is included
-   as a standard element. Stay tuned for PyPI availability!
-
-.. todo:: Remove the above note if PyPI version is/will be available at time of release.
-   If the library is not planned for PyPI, remove the entire 'Installing from PyPI' section.
-
-On supported GNU/Linux systems like the Raspberry Pi, you can install the driver locally `from
-PyPI <https://pypi.org/project/adafruit-circuitpython-mcp9600/>`_. To install for current user:
-
-.. code-block:: shell
-
-    pip3 install adafruit-circuitpython-mcp9600
-
-To install system-wide (this may be required in some cases):
-
-.. code-block:: shell
-
-    sudo pip3 install adafruit-circuitpython-mcp9600
-
-To install in a virtual environment in your current project:
-
-.. code-block:: shell
-
-    mkdir project-name && cd project-name
-    python3 -m venv .env
-    source .env/bin/activate
-    pip3 install adafruit-circuitpython-mcp9600
-
 Usage Example
 =============
 
-The examples folder contains on using this library.
-Below is a simple program showing the hot junction temperature (the
+This is a simple example showing the hot junction temperature (the
 temperature at the tip of the thermocouple). You will find another example
 in the examples folder.
 
@@ -80,6 +49,34 @@ You may need to adjust the I2C frequency if you receive input/output errors.
         print("temperature(C):",device.hot_junction_temperature)
     except ValueError:
         print("MCP9600 sensor not detected")
+
+This example displays the ambient/room and hot junction temperatures at
+one second intervals. Turn on the Mu editor's plotter option to see the 
+temperatures in a real-time graph.
+
+.. code-block:: shell
+
+    import board
+    import busio
+    import time
+    from adafruit_bus_device.i2c_device import I2CDevice
+    from adafruit_mcp9600 import MCP9600
+
+    # try different frequency values if you get an i2c input/output error
+    i2c = busio.I2C(board.SCL, board.SDA,frequency=200000)
+
+    try:
+        device = MCP9600(i2c)
+        print("version:",device.version)
+        while True:
+            print(
+                    device.ambient_temperature, 
+                    device.hot_junction_temperature 
+            )
+            time.sleep(1)
+    except ValueError:
+        print("MCP9600 sensor not detected")
+
 
 Contributing
 ============

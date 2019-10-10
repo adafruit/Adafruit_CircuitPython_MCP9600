@@ -4,7 +4,7 @@ import time
 from adafruit_bus_device.i2c_device import I2CDevice
 from adafruit_mcp9600 import MCP9600
 
-SENSOR_ADDR = 0X60
+SENSOR_ADDR = 0x67
 
 # try different frequency values if you get an i2c input/output error
 i2c = busio.I2C(board.SCL, board.SDA,frequency=200000)
