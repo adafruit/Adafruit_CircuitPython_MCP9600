@@ -23,7 +23,7 @@
 `adafruit_mcp9600`
 ================================================================================
 
-CircuitPython library for the Adafruit MCP9600 breakout
+CircuitPython driver for the MCP9600 thermocouple I2C amplifier
 
 
 * Author(s): Dan Cogliano
@@ -33,17 +33,15 @@ Implementation Notes
 
 **Hardware:**
 
-.. todo:: Add links to any specific hardware product page(s), or category page(s). Use unordered list & hyperlink rST
-   inline format: "* `Link Text <url>`_"
+* Adafruit MCP9600 I2C Thermocouple Amplifier:
+  https://www.adafruit.com/product/4101
 
 **Software and Dependencies:**
 
 * Adafruit CircuitPython firmware for the supported boards:
   https://github.com/adafruit/circuitpython/releases
 
-.. todo:: Uncomment or remove the Bus Device and/or the Register library dependencies based on the library's use of either.
-
-# * Adafruit's Bus Device library: https://github.com/adafruit/Adafruit_CircuitPython_BusDevice
+* Adafruit's Bus Device library: https://github.com/adafruit/Adafruit_CircuitPython_BusDevice
 """
 
 # imports
