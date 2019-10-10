@@ -62,7 +62,7 @@ _REGISTER_VERSION = const(0x20)
 class MCP9600():
     """Interface to the MCP9600 thermocouple amplifier breakout"""
 
-    types = ["K", "J", "T", "N", "S", "E", "B", "R"]
+    types = ("K", "J", "T", "N", "S", "E", "B", "R")
 
     def __init__(self, i2c, address=_DEFAULT_ADDRESS, tctype="K", tcfilter=0):
         self.buf = bytearray(3)
