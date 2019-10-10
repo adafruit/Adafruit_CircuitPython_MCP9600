@@ -48,8 +48,8 @@ Implementation Notes
 
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_MCP9600.git"
-from adafruit_bus_device.i2c_device import I2CDevice
 from micropython import const
+from adafruit_bus_device.i2c_device import I2CDevice
 
 _DEFAULT_ADDRESS = const(0x67)
 
@@ -62,78 +62,78 @@ _REGISTER_VERSION = const(0x20)
 class MCP9600():
     """Interface to the MCP9600 thermocouple amplifier breakout"""
 
-    def __init__(self, i2c, address=_DEFAULT_ADDRESS, type="K", filter=0):
+    def __init__(self, i2c, address=_DEFAULT_ADDRESS, tctype="K", tcfilter=0):
         types = ["K", "J", "T", "N", "S", "E", "B", "R"]
         self.buf = bytearray(3)
         self.i2c_device = I2CDevice(i2c, address)
-        self.type = type
+        self.type = tctype
         # is this a valid thermocouple type?
-        if type not in types:
-            raise Exception("invalid thermocouple type ({})".format(type))
+        if tctype not in types:
+            raise Exception("invalid thermocouple type ({})".format(tctype))
         # filter is from 0 (none) to 7 (max), can limit spikes in
         # temperature readings
-        filter = min(7, max(0, filter))
+        tcfilter = min(7, max(0, tcfilter))
         ttype = 0  # default is Type K
-        if type == "J":
+        if tctype == "J":
             ttype = 0x01
-        elif type == "T":
+        elif tctype == "T":
             ttype = 0x02
-        elif type == "N":
+        elif tctype == "N":
             ttype = 0x03
-        elif type == "S":
+        elif tctype == "S":
             ttype = 0x04
-        elif type == "E":
+        elif tctype == "E":
             ttype = 0x05
-        elif type == "B":
+        elif tctype == "B":
             ttype = 0x06
-        elif type == "R":
+        elif tctype == "R":
             ttype = 0x07
 
         self.buf[0] = _REGISTER_THERM_CFG
-        self.buf[1] = filter | (ttype << 4)
-        with self.i2c_device as i2c:
-            i2c.write(self.buf, end=2)
+        self.buf[1] = tcfilter | (ttype << 4)
+        with self.i2c_device as tci2c:
+            tci2c.write(self.buf, end=2)
 
     @property
     def version(self):
         """ MCP9600 chip version """
         version = self._read_register(_REGISTER_VERSION, 1)
-        return (version)
+        return version
 
     @property
     def ambient_temperature(self):
         """ Cold junction/ambient/room temperature in Celsius """
-        t = self._read_register(_REGISTER_COLD_JUNCTION, 2)
-        if t[0] & 0xf0:
+        data = self._read_register(_REGISTER_COLD_JUNCTION, 2)
+        if data[0] & 0xf0:
             # negative temperature
-            value = t[0]*16.0 + t[1]/16.0 - 4096
+            value = data[0]*16.0 + data[1]/16.0 - 4096
         else:
             # positive temperature
-            value = t[0]*16.0 + t[1]/16.0
+            value = data[0]*16.0 + data[1]/16.0
         return value
 
     @property
     def hot_junction_temperature(self):
         """ Hot junction temperature in Celsius """
-        t = self._read_register(_REGISTER_HOT_JUNCTION, 2)
-        if t[0] & 0x80:
+        data = self._read_register(_REGISTER_HOT_JUNCTION, 2)
+        if data[0] & 0x80:
             # negative temperature
-            value = t[0]*16.0 + t[1]/16.0 - 4096
+            value = data[0]*16.0 + data[1]/16.0 - 4096
         else:
             # positive temperature
-            value = t[0]*16.0 + t[1]/16.0
+            value = data[0]*16.0 + data[1]/16.0
         return value
 
     @property
     def delta_temperature(self):
         """ Delta temperature in Celsius """
-        t = self._read_register(_REGISTER_DELTA_TEMP, 2)
-        if t[0] & 0x80:
+        data = self._read_register(_REGISTER_DELTA_TEMP, 2)
+        if data[0] & 0x80:
             # negative temperature
-            value = t[0]*16.0 + t[1]/16.0 - 4096
+            value = data[0]*16.0 + data[1]/16.0 - 4096
         else:
             # positive temperature
-            value = t[0]*16.0 + t[1]/16.0
+            value = data[0]*16.0 + data[1]/16.0
         return value
 
     def _read_register(self, reg, count=1):
@@ -142,8 +142,8 @@ class MCP9600():
         with self.i2c_device as i2c:
             i2c.write_then_readinto(
                 self.buf,
-                self.buf, 
-                out_end=count, 
+                self.buf,
+                out_end=count,
                 in_start=1
             )
         if count == 1:
@@ -151,4 +151,3 @@ class MCP9600():
         elif count == 2:
             return self.buf[1], self.buf[2]
         return None
-
