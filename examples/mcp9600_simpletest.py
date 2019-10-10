@@ -7,11 +7,11 @@ from adafruit_mcp9600 import MCP9600
 SENSOR_ADDR = 0x67
 
 # try different frequency values if you get an i2c input/output error
-i2c = busio.I2C(board.SCL, board.SDA,frequency=200000)
+i2c = busio.I2C(board.SCL, board.SDA, frequency=200000)
 
 try:
     device = MCP9600(i2c,SENSOR_ADDR,"K")
-    print("version:",device.version)
+    print("version:", device.version)
     while True:
         print(
                 device.ambient_temperature, 

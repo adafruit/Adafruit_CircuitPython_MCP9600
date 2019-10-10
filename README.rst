@@ -49,7 +49,7 @@ I2C frequency if you receive input/output errors.
         print("MCP9600 sensor not detected")
 
 This example displays the ambient/room and hot junction temperatures at
-one second intervals. Turn on the Mu editor's plotter option to see the 
+1 second intervals. Turn on the Mu editor's plotter option to view the 
 temperatures in a real-time graph.
 
 .. code-block:: shell
@@ -60,11 +60,11 @@ temperatures in a real-time graph.
     from adafruit_bus_device.i2c_device import I2CDevice
     from adafruit_mcp9600 import MCP9600
 
-    i2c = busio.I2C(board.SCL, board.SDA,frequency=200000)
+    i2c = busio.I2C(board.SCL, board.SDA, frequency=200000)
 
     try:
         device = MCP9600(i2c)
-        print("version:",device.version)
+        print("version:", device.version)
         while True:
             print(
                     device.ambient_temperature, 
