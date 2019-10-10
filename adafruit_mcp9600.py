@@ -62,32 +62,19 @@ _REGISTER_VERSION = const(0x20)
 class MCP9600():
     """Interface to the MCP9600 thermocouple amplifier breakout"""
 
+    types = ["K", "J", "T", "N", "S", "E", "B", "R"]
+
     def __init__(self, i2c, address=_DEFAULT_ADDRESS, tctype="K", tcfilter=0):
-        types = ["K", "J", "T", "N", "S", "E", "B", "R"]
         self.buf = bytearray(3)
         self.i2c_device = I2CDevice(i2c, address)
         self.type = tctype
         # is this a valid thermocouple type?
-        if tctype not in types:
+        if tctype not in MCP9600.types:
             raise Exception("invalid thermocouple type ({})".format(tctype))
         # filter is from 0 (none) to 7 (max), can limit spikes in
         # temperature readings
         tcfilter = min(7, max(0, tcfilter))
-        ttype = 0  # default is Type K
-        if tctype == "J":
-            ttype = 0x01
-        elif tctype == "T":
-            ttype = 0x02
-        elif tctype == "N":
-            ttype = 0x03
-        elif tctype == "S":
-            ttype = 0x04
-        elif tctype == "E":
-            ttype = 0x05
-        elif tctype == "B":
-            ttype = 0x06
-        elif tctype == "R":
-            ttype = 0x07
+        ttype = MCP9600.types.index(tctype) 
 
         self.buf[0] = _REGISTER_THERM_CFG
         self.buf[1] = tcfilter | (ttype << 4)
