@@ -74,7 +74,7 @@ class MCP9600():
         # filter is from 0 (none) to 7 (max), can limit spikes in
         # temperature readings
         tcfilter = min(7, max(0, tcfilter))
-        ttype = MCP9600.types.index(tctype) 
+        ttype = MCP9600.types.index(tctype)
 
         self.buf[0] = _REGISTER_THERM_CFG
         self.buf[1] = tcfilter | (ttype << 4)
