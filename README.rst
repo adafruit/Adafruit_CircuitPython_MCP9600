@@ -13,7 +13,11 @@ Introduction
     :target: https://travis-ci.com/adafruit/Adafruit_CircuitPython_MCP9600
     :alt: Build Status
 
-CircuitPython driver for the MCP9600 thermocouple I2C amplifier
+This is a CircuitPython driver for the MCP9600 thermocouple I2C amplifier. 
+In addition to the MCP9600 breakout, you will also need a thermocouple, which
+can be found in the Adafruit store. 
+The MCP9600 supports several thermocouple types for different temperature
+ranges. The "K" type is the default, with a range of -200C to +1372C.
 
 
 Dependencies
