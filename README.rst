@@ -48,7 +48,7 @@ I2C frequency if you receive input/output errors.
     try:
         # using default I2C register and "K" thermocouple
         device = MCP9600(i2c)
-        print("temperature(C):",device.hot_junction_temperature)
+        print("temperature(C):",device.temperature)
     except ValueError:
         print("MCP9600 sensor not detected")
 
@@ -72,7 +72,7 @@ temperatures in a real-time graph.
         while True:
             print(
                     device.ambient_temperature, 
-                    device.hot_junction_temperature 
+                    device.temperature 
             )
             time.sleep(1)
     except ValueError:

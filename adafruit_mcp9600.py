@@ -113,7 +113,7 @@ class MCP9600():
         return value
 
     @property
-    def hot_junction_temperature(self):
+    def temperature(self):
         """ Hot junction temperature in Celsius """
         data = self._read_register(_REGISTER_HOT_JUNCTION, 2)
         if data[0] & 0x80:

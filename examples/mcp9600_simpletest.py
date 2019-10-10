@@ -14,7 +14,7 @@ try:
     while True:
         print(
             device.ambient_temperature,
-            device.hot_junction_temperature,
+            device.temperature,
             device.delta_temperature
         )
         time.sleep(1)
