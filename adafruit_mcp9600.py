@@ -48,7 +48,9 @@ Implementation Notes
 
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_MCP9600.git"
+
 from micropython import const
+from struct import unpack
 from adafruit_bus_device.i2c_device import I2CDevice
 
 _DEFAULT_ADDRESS = const(0x67)
@@ -84,7 +86,9 @@ class MCP9600():
     @property
     def version(self):
         """ MCP9600 chip version """
-        return self._read_register(_REGISTER_VERSION, 1)
+        data = self._read_register(_REGISTER_VERSION, 2)
+        d = unpack(">xH",data)
+        return d[0]
 
     @property
     def ambient_temperature(self):
