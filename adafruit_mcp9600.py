@@ -49,8 +49,8 @@ Implementation Notes
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_MCP9600.git"
 
-from micropython import const
 from struct import unpack
+from micropython import const
 from adafruit_bus_device.i2c_device import I2CDevice
 
 _DEFAULT_ADDRESS = const(0x67)
