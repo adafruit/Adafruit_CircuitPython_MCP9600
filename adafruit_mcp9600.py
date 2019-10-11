@@ -87,7 +87,7 @@ class MCP9600():
     def version(self):
         """ MCP9600 chip version """
         data = self._read_register(_REGISTER_VERSION, 2)
-        value = unpack(">xH",data)
+        value = unpack(">xH", data)
         return value[0]
 
     @property
