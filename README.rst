@@ -70,10 +70,10 @@ temperatures in a real-time graph.
         device = MCP9600(i2c)
         print("version:", device.version)
         while True:
-            print(
-                    device.ambient_temperature, 
-                    device.temperature 
-            )
+            print((
+                device.ambient_temperature, 
+                device.temperature 
+            ))
             time.sleep(1)
     except ValueError:
         print("MCP9600 sensor not detected")
