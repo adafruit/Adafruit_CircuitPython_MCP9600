@@ -90,40 +90,39 @@ class MCP9600():
     def ambient_temperature(self):
         """ Cold junction/ambient/room temperature in Celsius """
         data = self._read_register(_REGISTER_COLD_JUNCTION, 2)
-        if data[0] & 0xf0:
+        if data[1] & 0xf0:
             # negative temperature
-            value = data[0]*16.0 + data[1]/16.0 - 4096
+            value = data[1]*16.0 + data[2]/16.0 - 4096
         else:
             # positive temperature
-            value = data[0]*16.0 + data[1]/16.0
+            value = data[1]*16.0 + data[2]/16.0
         return value
 
     @property
     def temperature(self):
         """ Hot junction temperature in Celsius """
         data = self._read_register(_REGISTER_HOT_JUNCTION, 2)
-        if data[0] & 0x80:
+        if data[1] & 0x80:
             # negative temperature
-            value = data[0]*16.0 + data[1]/16.0 - 4096
+            value = data[1]*16.0 + data[2]/16.0 - 4096
         else:
             # positive temperature
-            value = data[0]*16.0 + data[1]/16.0
+            value = data[1]*16.0 + data[2]/16.0
         return value
 
     @property
     def delta_temperature(self):
         """ Delta temperature in Celsius """
         data = self._read_register(_REGISTER_DELTA_TEMP, 2)
-        if data[0] & 0x80:
+        if data[1] & 0x80:
             # negative temperature
-            value = data[0]*16.0 + data[1]/16.0 - 4096
+            value = data[1]*16.0 + data[2]/16.0 - 4096
         else:
             # positive temperature
-            value = data[0]*16.0 + data[1]/16.0
+            value = data[1]*16.0 + data[2]/16.0
         return value
 
     def _read_register(self, reg, count=1):
-        # pylint: disable=no-else-return
         self.buf[0] = reg
         with self.i2c_device as i2c:
             i2c.write_then_readinto(
@@ -132,8 +131,4 @@ class MCP9600():
                 out_end=count,
                 in_start=1
             )
-        if count == 1:
-            return self.buf[1]
-        elif count == 2:
-            return self.buf[1], self.buf[2]
-        return None
+        return self.buf
