@@ -87,8 +87,7 @@ class MCP9600():
     def version(self):
         """ MCP9600 chip version """
         data = self._read_register(_REGISTER_VERSION, 2)
-        value = unpack(">xH", data)
-        return value[0]
+        return unpack(">xH", data)[0]
 
     @property
     def ambient_temperature(self):
