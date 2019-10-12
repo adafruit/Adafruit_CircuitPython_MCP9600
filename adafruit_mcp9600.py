@@ -94,36 +94,28 @@ class MCP9600():
     def ambient_temperature(self):
         """ Cold junction/ambient/room temperature in Celsius """
         data = self._read_register(_REGISTER_COLD_JUNCTION, 2)
-        if data[1] & 0xf0:
-            # negative temperature
-            value = data[1]*16.0 + data[2]/16.0 - 4096
-        else:
-            # positive temperature
-            value = data[1]*16.0 + data[2]/16.0
+        value = unpack(">xH", data)[0] * 0.0625
+        if data[1] & 0x80:
+            value -= 4096
         return value
+
 
     @property
     def temperature(self):
         """ Hot junction temperature in Celsius """
         data = self._read_register(_REGISTER_HOT_JUNCTION, 2)
+        value = unpack(">xH", data)[0] * 0.0625
         if data[1] & 0x80:
-            # negative temperature
-            value = data[1]*16.0 + data[2]/16.0 - 4096
-        else:
-            # positive temperature
-            value = data[1]*16.0 + data[2]/16.0
+            value -= 4096
         return value
 
     @property
     def delta_temperature(self):
         """ Delta temperature in Celsius """
         data = self._read_register(_REGISTER_DELTA_TEMP, 2)
+        value = unpack(">xH", data)[0] * 0.0625
         if data[1] & 0x80:
-            # negative temperature
-            value = data[1]*16.0 + data[2]/16.0 - 4096
-        else:
-            # positive temperature
-            value = data[1]*16.0 + data[2]/16.0
+            value -= 4096
         return value
 
     def _read_register(self, reg, count=1):
