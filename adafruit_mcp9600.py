@@ -240,8 +240,6 @@ class MCP9600:
             alert_1 = digitalio.DigitalInOut(board.D5)
             alert_1.switch_to_input()
 
-            mcp.burst_mode_samples = mcp.BURST_SAMPLES_1
-            mcp.ambient_resolution = mcp.AMBIENT_RESOLUTION_0_25
             mcp.alert_config(alert_number=1, alert_temp_source=mcp.THERMOCOUPLE,
                              alert_temp_limit=25, alert_hysteresis=0,
                              alert_temp_direction=mcp.RISING, alert_mode=mcp.COMPARATOR,
