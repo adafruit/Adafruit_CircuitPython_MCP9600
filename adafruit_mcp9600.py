@@ -104,11 +104,11 @@ class MCP9600:
 
     # STATUS - 0x4
     burst_complete = RWBit(0x4, 7)
-    """Burst complete"""
+    """Burst complete."""
     temperature_update = RWBit(0x4, 6)
-    """Temperature update"""
+    """Temperature update."""
     input_range = ROBit(0x4, 4)
-    """Input range"""
+    """Input range."""
     alert_1 = ROBit(0x4, 0)
     """Alert 1 status."""
     alert_2 = ROBit(0x4, 1)
@@ -203,7 +203,8 @@ class MCP9600:
 
         :param int alert_number: The alert pin number. Must be 1-4.
         :param alert_temp_source: The temperature source to monitor for the alert. Options are:
-                                  ``THERMOCOUPLE`` or ``AMBIENT``.
+                                  ``THERMOCOUPLE`` (hot-junction) or ``AMBIENT`` (cold-junction).
+                                  Temperatures are in Celsius.
         :param float alert_temp_limit: The temperature in degrees Celsius at which the alert should
                                        trigger. For rising temperatures, the alert will trigger when
                                        the temperature rises above this limit. For falling
@@ -216,8 +217,11 @@ class MCP9600:
         :param alert_temp_direction: The direction the temperature must change to trigger the alert.
                                      Options are ``RISING`` (heating up) or ``FALLING`` (cooling
                                      down).
-        :param alert_mode: The alert mode. Options are ``COMPARATOR`` or ``INTERRUPT``. If setting
-                           mode to ``INTERRUPT``, use ``alert_interrupt_clear`` to clear the
+        :param alert_mode: The alert mode. Options are ``COMPARATOR`` or ``INTERRUPT``. In
+                           comparator mode, the pin will follow the alert, so if the temperature
+                           drops, for example, the alert pin will go back low. In interrupt mode,
+                           by comparison, once the alert goes off, you must manually clear it. If
+                           setting mode to ``INTERRUPT``, use ``alert_interrupt_clear`` to clear the
                            interrupt flag.
         :param alert_state: Alert pin output state. Options are ``ACTIVE_HIGH`` or ``ACTIVE_LOW``.
 
@@ -258,11 +262,25 @@ class MCP9600:
 
     def alert_disable(self, alert_number):
         """Configuring an alert using ``alert_config()`` enables the specified alert by default.
-        Use ``alert_disable`` to disable an alert pin."""
+        Use ``alert_disable`` to disable an alert pin.
+
+        :param int alert_number: The alert pin number. Must be 1-4.
+
+        """
+        if alert_number not in (1, 2, 3, 4):
+            raise ValueError("Alert pin number must be 1-4.")
         setattr(self, '_alert_%d_enable' % alert_number, False)
 
     def alert_interrupt_clear(self, alert_number, interrupt_clear=True):
-        """Setting ``interrupt_clear==True`` clears the interrupt flag."""
+        """Turns off the alert flag in the MCP9600, and clears the pin state (not used if the alert
+        is in comparator mode). Required when ``alert_mode`` is ``INTERRUPT``.
+
+        :param int alert_number: The alert pin number. Must be 1-4.
+        :param bool interrupt_clear: The bit to write the interrupt state flag
+
+        """
+        if alert_number not in (1, 2, 3, 4):
+            raise ValueError("Alert pin number must be 1-4.")
         setattr(self, '_alert_%d_interrupt_clear' % alert_number, interrupt_clear)
 
     @property
