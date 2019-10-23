@@ -48,7 +48,7 @@ Implementation Notes
 from struct import unpack
 from micropython import const
 from adafruit_bus_device.i2c_device import I2CDevice
-from adafruit_register.i2c_struct import UnaryStruct, ROUnaryStruct
+from adafruit_register.i2c_struct import UnaryStruct
 from adafruit_register.i2c_bits import RWBits, ROBits
 from adafruit_register.i2c_bit import RWBit, ROBit
 
@@ -244,7 +244,7 @@ class MCP9600:
         """
         if alert_number not in (1, 2, 3, 4):
             raise ValueError("Alert pin number must be 1-4.")
-        if not (0 <= alert_hysteresis < 256):
+        if not 0 <= alert_hysteresis < 256:
             raise ValueError("Hysteresis value must be 0-255.")
         setattr(self, '_alert_%d_monitor' % alert_number, alert_temp_source)
         setattr(self, '_alert_%d_temperature_limit' % alert_number, int(alert_temp_limit / 0.0625))
