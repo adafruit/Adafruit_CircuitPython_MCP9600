@@ -1,22 +1,17 @@
 import time
 import board
 import busio
-from adafruit_mcp9600 import MCP9600
+import adafruit_mcp9600
 
-SENSOR_ADDR = 0x67
+# frequency must be set for the MCP9600 to function.
+# If you experience I/O errors, try changing the frequency.
+i2c = busio.I2C(board.SCL, board.SDA, frequency=100000)
+mcp = adafruit_mcp9600.MCP9600(i2c)
 
-# try different frequency values if you get an i2c input/output error
-i2c = busio.I2C(board.SCL, board.SDA, frequency=200000)
-
-try:
-    device = MCP9600(i2c,SENSOR_ADDR,"K")
-    print("version:", device.version)
-    while True:
-        print((
-            device.ambient_temperature,
-            device.temperature,
-            device.delta_temperature
-        ))
-        time.sleep(1)
-except ValueError:
-    print("MCP9600 sensor not detected")
+while True:
+    print((
+        mcp.ambient_temperature,
+        mcp.temperature,
+        mcp.delta_temperature
+    ))
+    time.sleep(1)
