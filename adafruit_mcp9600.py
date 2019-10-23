@@ -200,17 +200,19 @@ class MCP9600:
                      alert_temp_direction, alert_mode, alert_state):
         """Configure a specified alert pin. Alert is enabled by default when alert is configured.
         To disable an alert pin, use ``alert_disable``.
+
         :param int alert_number: The alert pin number. Must be 1-4.
         :param alert_temp_source: The temperature source to monitor for the alert. Options are:
                                   ``THERMOCOUPLE`` or ``AMBIENT``.
         :param float alert_temp_limit: The temperature in degrees Celsius at which the alert should
-                                 trigger. For rising temperatures, the alert will trigger when the
-                                 temperature rises above this limit. For falling temperatures, the
-                                 alert will trigger when the temperature falls below this limit.
+                                       trigger. For rising temperatures, the alert will trigger when
+                                       the temperature rises above this limit. For falling
+                                       temperatures, the alert will trigger when the temperature
+                                       falls below this limit.
         :param float alert_hysteresis: The alert hysteresis range. Must be 0-255 degrees Celsius.
-                                 For rising temperatures, the hysteresis is below alert limit. For
-                                 falling temperatures, the hysteresis is above alert limit. See
-                                 data-sheet for further information.
+                                       For rising temperatures, the hysteresis is below alert limit.
+                                       For falling temperatures, the hysteresis is above alert
+                                       limit. See data-sheet for further information.
         :param alert_temp_direction: The direction the temperature must change to trigger the alert.
                                      Options are ``RISING`` (heating up) or ``FALLING`` (cooling
                                      down).
