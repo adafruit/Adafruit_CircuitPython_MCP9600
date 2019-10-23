@@ -1,6 +1,7 @@
 # The MIT License (MIT)
 #
 # Copyright (c) 2019 Dan Cogliano for Adafruit Industries
+# Copyright (c) 2019 Kattni Rembor for Adafruit Industries
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +27,7 @@
 CircuitPython driver for the MCP9600 thermocouple I2C amplifier
 
 
-* Author(s): Dan Cogliano
+* Author(s): Dan Cogliano, Kattni Rembor
 
 Implementation Notes
 --------------------
@@ -63,8 +64,15 @@ _REGISTER_THERM_CFG = const(0x05)
 _REGISTER_VERSION = const(0x20)
 
 
-class BurstModeSamples:
-    """An enum-like class representing the options for number of burst mode samples."""
+class MCP9600:
+    """Interface to the MCP9600 thermocouple amplifier breakout"""
+
+    # Shutdown mode options
+    NORMAL = 0b00
+    SHUTDOWN = 0b01
+    BURST = 0b10
+
+    # Burst mode sample options
     BURST_SAMPLES_1 = 0b000
     BURST_SAMPLES_2 = 0b001
     BURST_SAMPLES_4 = 0b010
@@ -73,17 +81,6 @@ class BurstModeSamples:
     BURST_SAMPLES_32 = 0b101
     BURST_SAMPLES_64 = 0b110
     BURST_SAMPLES_128 = 0b111
-
-
-class ShutdownModes:
-    """An enum-like class representing the options for shutdown modes"""
-    NORMAL = 0b00
-    SHUTDOWN = 0b01
-    BURST = 0b10
-
-
-class MCP9600:
-    """Interface to the MCP9600 thermocouple amplifier breakout"""
 
     # Alert temperature monitor options
     AMBIENT = 1
@@ -101,27 +98,35 @@ class MCP9600:
     INTERRUPT = 1  # Interrupt clear option must be set when using this mode!
     COMPARATOR = 0
 
-    # TODO: Get clarification on this and potentially update names
-    # Interrupt clear options
-    CLEAR_INTERRUPT_FLAG = 1
-    NORMAL_STATE = 0
-
     # Ambient (cold-junction) temperature sensor resolution options
     AMBIENT_RESOLUTION_0_0625 = 0  # 0.0625 degrees Celsius
     AMBIENT_RESOLUTION_0_25 = 1  # 0.25 degrees Celsius
 
     # STATUS - 0x4
     burst_complete = RWBit(0x4, 7)
+    """Burst complete"""
     temperature_update = RWBit(0x4, 6)
+    """Temperature update"""
     input_range = ROBit(0x4, 4)
+    """Input range"""
     alert_1 = ROBit(0x4, 0)
+    """Alert 1 status."""
     alert_2 = ROBit(0x4, 1)
+    """Alert 2 status."""
     alert_3 = ROBit(0x4, 2)
+    """Alert 3 status."""
     alert_4 = ROBit(0x4, 3)
+    """Alert 4 status."""
     # Device Configuration - 0x6
     ambient_resolution = RWBit(0x6, 7)
+    """Ambient (cold-junction) temperature resolution. Options are ``AMBIENT_RESOLUTION_0_0625``
+    (0.0625 degrees Celsius) or ``AMBIENT_RESOLUTION_0_25`` (0.25 degrees Celsius)."""
     burst_mode_samples = RWBits(3, 0x6, 2)
+    """The number of samples taken during a burst in burst mode. Options are ``BURST_SAMPLES_1``,
+    ``BURST_SAMPLES_2``, ``BURST_SAMPLES_4``, ``BURST_SAMPLES_8``, ``BURST_SAMPLES_16``,
+    ``BURST_SAMPLES_32``, ``BURST_SAMPLES_64``, ``BURST_SAMPLES_128``."""
     shutdown_mode = RWBits(2, 0x6, 0)
+    """Shutdown modes. Options are ``NORMAL``, ``SHUTDOWN``, and ``BURST``."""
     # Alert 1 Configuration - 0x8
     _alert_1_interrupt_clear = RWBit(0x8, 7)
     _alert_1_monitor = RWBit(0x8, 4)
@@ -129,7 +134,6 @@ class MCP9600:
     _alert_1_state = RWBit(0x8, 2)
     _alert_1_mode = RWBit(0x8, 1)
     _alert_1_enable = RWBit(0x8, 0)
-    """Set to ``True`` to enable alert output. Set to ``False`` to disable alert output."""
     # Alert 2 Configuration - 0x9
     _alert_2_interrupt_clear = RWBit(0x9, 7)
     _alert_2_monitor = RWBit(0x9, 4)
@@ -194,8 +198,54 @@ class MCP9600:
 
     def alert_config(self, *, alert_number, alert_temp_source, alert_temp_limit, alert_hysteresis,
                      alert_temp_direction, alert_mode, alert_state):
-        """ For rising temps, hysteresis is below alert limit; falling temps, above alert limit
-        Alert is enabled by default when set. To disable, use alert_disable method."""
+        """Configure a specified alert pin. Alert is enabled by default when alert is configured.
+        To disable an alert pin, use ``alert_disable``.
+        :param int alert_number: The alert pin number. Must be 1-4.
+        :param alert_temp_source: The temperature source to monitor for the alert. Options are:
+                                  ``THERMOCOUPLE`` or ``AMBIENT``.
+        :param float alert_temp_limit: The temperature in degrees Celsius at which the alert should
+                                 trigger. For rising temperatures, the alert will trigger when the
+                                 temperature rises above this limit. For falling temperatures, the
+                                 alert will trigger when the temperature falls below this limit.
+        :param float alert_hysteresis: The alert hysteresis range. Must be 0-255 degrees Celsius.
+                                 For rising temperatures, the hysteresis is below alert limit. For
+                                 falling temperatures, the hysteresis is above alert limit. See
+                                 data-sheet for further information.
+        :param alert_temp_direction: The direction the temperature must change to trigger the alert.
+                                     Options are ``RISING`` (heating up) or ``FALLING`` (cooling
+                                     down).
+        :param alert_mode: The alert mode. Options are ``COMPARATOR`` or ``INTERRUPT``. If setting
+                           mode to ``INTERRUPT``, use ``alert_interrupt_clear`` to clear the
+                           interrupt flag.
+        :param alert_state: Alert pin output state. Options are ``ACTIVE_HIGH`` or ``ACTIVE_LOW``.
+
+
+        For example, to configure alert 1:
+
+        .. code-block:: python
+
+            import board
+            import busio
+            import digitalio
+            import adafruit_mcp9600
+
+            i2c = busio.I2C(board.SCL, board.SDA, frequency=100000)
+            mcp = adafruit_mcp9600.MCP9600(i2c)
+            alert_1 = digitalio.DigitalInOut(board.D5)
+            alert_1.switch_to_input()
+
+            mcp.burst_mode_samples = mcp.BURST_SAMPLES_1
+            mcp.ambient_resolution = mcp.AMBIENT_RESOLUTION_0_25
+            mcp.alert_config(alert_number=1, alert_temp_source=mcp.THERMOCOUPLE,
+                             alert_temp_limit=25, alert_hysteresis=0,
+                             alert_temp_direction=mcp.RISING, alert_mode=mcp.COMPARATOR,
+                             alert_state=mcp.ACTIVE_LOW)
+
+        """
+        if alert_number not in (1, 2, 3, 4):
+            raise ValueError("Alert pin number must be 1-4.")
+        if not (0 <= alert_hysteresis < 256):
+            raise ValueError("Hysteresis value must be 0-255.")
         setattr(self, '_alert_%d_monitor' % alert_number, alert_temp_source)
         setattr(self, '_alert_%d_temperature_limit' % alert_number, int(alert_temp_limit / 0.0625))
         setattr(self, '_alert_%d_hysteresis' % alert_number, alert_hysteresis)
@@ -205,9 +255,12 @@ class MCP9600:
         setattr(self, '_alert_%d_enable' % alert_number, True)
 
     def alert_disable(self, alert_number):
+        """Configuring an alert using ``alert_config()`` enables the specified alert by default.
+        Use ``alert_disable`` to disable an alert pin."""
         setattr(self, '_alert_%d_enable' % alert_number, False)
 
     def alert_interrupt_clear(self, alert_number, interrupt_clear=True):
+        """Setting ``interrupt_clear==True`` clears the interrupt flag."""
         setattr(self, '_alert_%d_interrupt_clear' % alert_number, interrupt_clear)
 
     @property
@@ -224,7 +277,6 @@ class MCP9600:
         if data[1] & 0x80:
             value -= 4096
         return value
-
 
     @property
     def temperature(self):
