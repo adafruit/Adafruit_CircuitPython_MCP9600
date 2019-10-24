@@ -11,11 +11,8 @@ python:
 cache:
   pip: true
 
-# TODO: if deployment to PyPi is desired, change 'DEPLOY_PYPI' to "true",
-#       or remove the env block entirely and remove the condition in the
-#       deploy block.
 env:
-  - DEPLOY_PYPI="false"
+  - DEPLOY_PYPI="true"
 
 deploy:
   - provider: releases
@@ -26,12 +23,10 @@ deploy:
     overwrite: true
     on:
       tags: true
-  # TODO: Use 'travis encrypt --com -r adafruit/<repo slug>' to generate
-  #       the encrypted password for adafruit-travis. Paste result below.
   - provider: pypi
     user: adafruit-travis
     password:
-      secure: #-- PASTE ENCRYPTED PASSWORD HERE --#
+      secure: H9gelvURBti6uNVU4tLVZwkkUG4QGESTATcy2zzM82aa7LYPFera/SGy+jXixzKz1pC1ujVmN5aL0iKQZw5cuffJxp0AbOEap/HpD9mlmxAT5bjRP7U+ItcXwZEZOySTX+I2xPo9idiTSqVA9dS4HDSBvyxP9rwZ7QsfciKThHX0fNNzIFZlIo313etW0MAqRTjtwjaE5+6VDMnaoj2hgopCg5V75qE90mF90VCsbR4q4Im5/VevXRiDxpJE3QRjZSifpXYY9TbQJr9Qy7X4qWmKiI6+ubsCGODNIdswkpPsmeNOqGIfJZ2DISgeq50rY0wSxEIZzUHJXMie1IYaWkOwMVh0zI0viWvHEOVgThpT/40Y118iMzeDUlm3B4fk1VN2MLWzVomxdioVBzzcvDXSSlZw62TaADJSL3HZsu/+2o2KqA9o0ZgRs8b/akXNJ6u2TGvPWLnZHfDA4jirJHW0Ojsgt7svwhsij2hBHh5WkVkoL+XLhcR92ZQdnvnd8E7jtG27zTCG+GkIN40svuNY5YRgoUhFLrxkeediFlhi2kK24UeEBg6Z5PFlCTwjU7mcZ2Se2G2VAOZWLVaVeZcbizi6D0XaIKXqe/EidMOiK+Ce5AkmvuJLYaEMIxquu0BcrqE/FBQrTEIWGjv4Dmy8UGZGLRSlYk1pP72cCjM=
     on:
       tags: true
       condition: $DEPLOY_PYPI = "true"
