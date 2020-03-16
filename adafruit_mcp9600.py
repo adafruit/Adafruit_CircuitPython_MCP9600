@@ -142,27 +142,27 @@ class MCP9600:
     _alert_2_mode = RWBit(0x9, 1)
     _alert_2_enable = RWBit(0x9, 0)
     # Alert 3 Configuration - 0xa
-    _alert_3_interrupt_clear = RWBit(0xa, 7)
-    _alert_3_monitor = RWBit(0xa, 4)
-    _alert_3_temp_direction = RWBit(0xa, 3)
-    _alert_3_state = RWBit(0xa, 2)
-    _alert_3_mode = RWBit(0xa, 1)
-    _alert_3_enable = RWBit(0xa, 0)
+    _alert_3_interrupt_clear = RWBit(0xA, 7)
+    _alert_3_monitor = RWBit(0xA, 4)
+    _alert_3_temp_direction = RWBit(0xA, 3)
+    _alert_3_state = RWBit(0xA, 2)
+    _alert_3_mode = RWBit(0xA, 1)
+    _alert_3_enable = RWBit(0xA, 0)
     # Alert 4 Configuration - 0xb
-    _alert_4_interrupt_clear = RWBit(0xb, 7)
-    _alert_4_monitor = RWBit(0xb, 4)
-    _alert_4_temp_direction = RWBit(0xb, 3)
-    _alert_4_state = RWBit(0xb, 2)
-    _alert_4_mode = RWBit(0xb, 1)
-    _alert_4_enable = RWBit(0xb, 0)
+    _alert_4_interrupt_clear = RWBit(0xB, 7)
+    _alert_4_monitor = RWBit(0xB, 4)
+    _alert_4_temp_direction = RWBit(0xB, 3)
+    _alert_4_state = RWBit(0xB, 2)
+    _alert_4_mode = RWBit(0xB, 1)
+    _alert_4_enable = RWBit(0xB, 0)
     # Alert 1 Hysteresis - 0xc
-    _alert_1_hysteresis = UnaryStruct(0xc, ">H")
+    _alert_1_hysteresis = UnaryStruct(0xC, ">H")
     # Alert 2 Hysteresis - 0xd
-    _alert_2_hysteresis = UnaryStruct(0xd, ">H")
+    _alert_2_hysteresis = UnaryStruct(0xD, ">H")
     # Alert 3 Hysteresis - 0xe
-    _alert_3_hysteresis = UnaryStruct(0xe, ">H")
+    _alert_3_hysteresis = UnaryStruct(0xE, ">H")
     # Alert 4 Hysteresis - 0xf
-    _alert_4_hysteresis = UnaryStruct(0xf, ">H")
+    _alert_4_hysteresis = UnaryStruct(0xF, ">H")
     # Alert 1 Limit - 0x10
     _alert_1_temperature_limit = UnaryStruct(0x10, ">H")
     # Alert 2 Limit - 0x11
@@ -196,8 +196,17 @@ class MCP9600:
         if self._device_id != 0x40:
             raise RuntimeError("Failed to find MCP9600 - check wiring!")
 
-    def alert_config(self, *, alert_number, alert_temp_source, alert_temp_limit, alert_hysteresis,
-                     alert_temp_direction, alert_mode, alert_state):
+    def alert_config(
+        self,
+        *,
+        alert_number,
+        alert_temp_source,
+        alert_temp_limit,
+        alert_hysteresis,
+        alert_temp_direction,
+        alert_mode,
+        alert_state
+    ):
         """Configure a specified alert pin. Alert is enabled by default when alert is configured.
         To disable an alert pin, use ``alert_disable``.
 
@@ -250,13 +259,17 @@ class MCP9600:
             raise ValueError("Alert pin number must be 1-4.")
         if not 0 <= alert_hysteresis < 256:
             raise ValueError("Hysteresis value must be 0-255.")
-        setattr(self, '_alert_%d_monitor' % alert_number, alert_temp_source)
-        setattr(self, '_alert_%d_temperature_limit' % alert_number, int(alert_temp_limit / 0.0625))
-        setattr(self, '_alert_%d_hysteresis' % alert_number, alert_hysteresis)
-        setattr(self, '_alert_%d_temp_direction' % alert_number, alert_temp_direction)
-        setattr(self, '_alert_%d_mode' % alert_number, alert_mode)
-        setattr(self, '_alert_%d_state' % alert_number, alert_state)
-        setattr(self, '_alert_%d_enable' % alert_number, True)
+        setattr(self, "_alert_%d_monitor" % alert_number, alert_temp_source)
+        setattr(
+            self,
+            "_alert_%d_temperature_limit" % alert_number,
+            int(alert_temp_limit / 0.0625),
+        )
+        setattr(self, "_alert_%d_hysteresis" % alert_number, alert_hysteresis)
+        setattr(self, "_alert_%d_temp_direction" % alert_number, alert_temp_direction)
+        setattr(self, "_alert_%d_mode" % alert_number, alert_mode)
+        setattr(self, "_alert_%d_state" % alert_number, alert_state)
+        setattr(self, "_alert_%d_enable" % alert_number, True)
 
     def alert_disable(self, alert_number):
         """Configuring an alert using ``alert_config()`` enables the specified alert by default.
@@ -267,7 +280,7 @@ class MCP9600:
         """
         if alert_number not in (1, 2, 3, 4):
             raise ValueError("Alert pin number must be 1-4.")
-        setattr(self, '_alert_%d_enable' % alert_number, False)
+        setattr(self, "_alert_%d_enable" % alert_number, False)
 
     def alert_interrupt_clear(self, alert_number, interrupt_clear=True):
         """Turns off the alert flag in the MCP9600, and clears the pin state (not used if the alert
@@ -279,7 +292,7 @@ class MCP9600:
         """
         if alert_number not in (1, 2, 3, 4):
             raise ValueError("Alert pin number must be 1-4.")
-        setattr(self, '_alert_%d_interrupt_clear' % alert_number, interrupt_clear)
+        setattr(self, "_alert_%d_interrupt_clear" % alert_number, interrupt_clear)
 
     @property
     def version(self):
@@ -317,10 +330,5 @@ class MCP9600:
     def _read_register(self, reg, count=1):
         self.buf[0] = reg
         with self.i2c_device as i2c:
-            i2c.write_then_readinto(
-                self.buf,
-                self.buf,
-                out_end=count,
-                in_start=1
-            )
+            i2c.write_then_readinto(self.buf, self.buf, out_end=count, in_start=1)
         return self.buf
