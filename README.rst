@@ -13,9 +13,9 @@ Introduction
     :target: https://github.com/adafruit/Adafruit_CircuitPython_MCP9600/actions/
     :alt: Build Status
 
-This is a CircuitPython driver for the MCP9600 thermocouple I2C amplifier. 
+This is a CircuitPython driver for the MCP9600 thermocouple I2C amplifier.
 In addition to the MCP9600 breakout, you will also need a thermocouple, which
-can be found in the Adafruit store. 
+can be found in the Adafruit store.
 The MCP9600 supports several thermocouple types for different temperature
 ranges. The "K" type is the default, with a range of -200C to +1372C.
 
@@ -45,7 +45,7 @@ To install system-wide (this may be required in some cases):
 .. code-block:: shell
 
     sudo pip3 install adafruit-circuitpython-mcp9600
-    
+
 To install in a virtual environment in your current project:
 
 .. code-block:: shell
@@ -54,12 +54,12 @@ To install in a virtual environment in your current project:
     python3 -m venv .env
     source .env/bin/activate
     pip3 install adafruit-circuitpython-mcp9600
-    
+
 Usage Example
 =============
 
 This is a simple example showing the hot junction temperature (the
-temperature at the tip of the thermocouple). You may need to adjust the 
+temperature at the tip of the thermocouple). You may need to adjust the
 I2C frequency if you receive input/output errors.
 
 .. code-block:: shell
@@ -78,7 +78,7 @@ I2C frequency if you receive input/output errors.
         print("MCP9600 sensor not detected")
 
 This example displays the ambient/room and hot junction temperatures at
-1 second intervals. Turn on the Mu editor's plotter option to view the 
+1 second intervals. Turn on the Mu editor's plotter option to view the
 temperatures in a real-time graph.
 
 .. code-block:: shell
@@ -96,8 +96,8 @@ temperatures in a real-time graph.
         print("version:", device.version)
         while True:
             print((
-                device.ambient_temperature, 
-                device.temperature 
+                device.ambient_temperature,
+                device.temperature
             ))
             time.sleep(1)
     except ValueError:
