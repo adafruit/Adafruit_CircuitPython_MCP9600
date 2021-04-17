@@ -17,8 +17,8 @@ Implementation Notes
 
 **Hardware:**
 
-* Adafruit MCP9600 I2C Thermocouple Amplifier:
-  https://www.adafruit.com/product/4101
+* `Adafruit MCP9600 I2C Thermocouple Amplifier:
+  <https://www.adafruit.com/product/4101>`_ (Product ID: 4101)
 
 **Software and Dependencies:**
 
@@ -48,7 +48,49 @@ _REGISTER_VERSION = const(0x20)
 
 
 class MCP9600:
-    """Interface to the MCP9600 thermocouple amplifier breakout"""
+    """
+    Interface to the MCP9600 thermocouple amplifier breakout
+
+    :param ~busio.I2C i2c: The I2C bus the MCP9600 is connected to.
+    :param int address: The I2C address of the device. Defaults to :const:`0x67`
+    :param str tctype: Thermocouple type. Defaults to :const:`"K"`
+    :param int tcfilter: Value for the temperature filter. Can limit spikes in
+     temperature readings. Defaults to :const:`0`
+
+
+    **Quickstart: Importing and using the MCP9600 temperature sensor**
+
+        Here is one way of importing the `MCP9600` class so you can use it with the name ``mcp``.
+        First you will need to import the libraries to use the sensor
+
+        .. code-block:: python
+
+            import busio
+            import board
+            import adafruit_mcp9600
+
+        Once this is done you can define your `busio.I2C` object and define your sensor object
+
+        .. code-block:: python
+
+            i2c = busio.I2C(board.SCL, board.SDA, frequency=100000)
+            mcp = adafruit_mcp9600.MCP9600(i2c)
+
+
+        Now you have access to the change in temperature using the
+        :attr:`delta_temperature` attribute, the thermocouple or hot junction
+        temperature in degrees Celsius using the :attr:`temperature`
+        attribute and the ambient or cold-junction temperature in degrees Celsius
+        using the :attr:`ambient_temperature` attribute
+
+        .. code-block:: python
+
+            delta_temperature = mcp.delta_temperature
+            temperature = mcp.temperature
+            ambient_temperature = mcp.ambient_temperature
+
+
+    """
 
     # Shutdown mode options
     NORMAL = 0b00
@@ -191,7 +233,7 @@ class MCP9600:
         alert_state
     ):
         """Configure a specified alert pin. Alert is enabled by default when alert is configured.
-        To disable an alert pin, use ``alert_disable``.
+        To disable an alert pin, use :meth:`alert_disable`.
 
         :param int alert_number: The alert pin number. Must be 1-4.
         :param alert_temp_source: The temperature source to monitor for the alert. Options are:
@@ -213,8 +255,8 @@ class MCP9600:
                            comparator mode, the pin will follow the alert, so if the temperature
                            drops, for example, the alert pin will go back low. In interrupt mode,
                            by comparison, once the alert goes off, you must manually clear it. If
-                           setting mode to ``INTERRUPT``, use ``alert_interrupt_clear`` to clear the
-                           interrupt flag.
+                           setting mode to ``INTERRUPT``, use :meth:`alert_interrupt_clear`
+                           to clear the interrupt flag.
         :param alert_state: Alert pin output state. Options are ``ACTIVE_HIGH`` or ``ACTIVE_LOW``.
 
 
@@ -255,8 +297,8 @@ class MCP9600:
         setattr(self, "_alert_%d_enable" % alert_number, True)
 
     def alert_disable(self, alert_number):
-        """Configuring an alert using ``alert_config()`` enables the specified alert by default.
-        Use ``alert_disable`` to disable an alert pin.
+        """Configuring an alert using :meth:`alert_config` enables the specified alert by default.
+        Use :meth:`alert_disable` to disable an alert pin.
 
         :param int alert_number: The alert pin number. Must be 1-4.
 
