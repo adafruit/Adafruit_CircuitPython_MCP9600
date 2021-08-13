@@ -218,8 +218,8 @@ class MCP9600:
         self.buf[1] = tcfilter | (ttype << 4)
         with self.i2c_device as tci2c:
             tci2c.write(self.buf, end=2)
-        if self._device_id != 0x40:
-            raise RuntimeError("Failed to find MCP9600 - check wiring!")
+        if self._device_id not in (0x40, 0x41):
+            raise RuntimeError("Failed to find MCP9600 or MCP9601 - check wiring!")
 
     def alert_config(
         self,
