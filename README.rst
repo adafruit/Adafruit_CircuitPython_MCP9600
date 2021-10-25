@@ -104,6 +104,11 @@ temperatures in a real-time graph.
         print("MCP9600 sensor not detected")
 
 
+Documentation
+=============
+
+API documentation for this library can be found on `Read the Docs <https://circuitpython.readthedocs.io/projects/mcp9600/en/latest/>`_.
+
 Contributing
 ============
 
