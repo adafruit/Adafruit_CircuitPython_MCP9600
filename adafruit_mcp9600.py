@@ -35,6 +35,11 @@ from adafruit_register.i2c_struct import UnaryStruct
 from adafruit_register.i2c_bits import RWBits, ROBits
 from adafruit_register.i2c_bit import RWBit, ROBit
 
+try:
+    from busio import I2C
+except ImportError:
+    pass
+
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_MCP9600.git"
 
@@ -202,7 +207,13 @@ class MCP9600:
 
     types = ("K", "J", "T", "N", "S", "E", "B", "R")
 
-    def __init__(self, i2c, address=_DEFAULT_ADDRESS, tctype="K", tcfilter=0):
+    def __init__(
+        self,
+        i2c: I2C,
+        address: int = _DEFAULT_ADDRESS,
+        tctype: str = "K",
+        tcfilter: int = 0,
+    ) -> None:
         self.buf = bytearray(3)
         self.i2c_device = I2CDevice(i2c, address)
         self.type = tctype
@@ -224,14 +235,14 @@ class MCP9600:
     def alert_config(
         self,
         *,
-        alert_number,
-        alert_temp_source,
-        alert_temp_limit,
-        alert_hysteresis,
-        alert_temp_direction,
-        alert_mode,
-        alert_state
-    ):
+        alert_number: int,
+        alert_temp_source: int,
+        alert_temp_limit: float,
+        alert_hysteresis: float,
+        alert_temp_direction: int,
+        alert_mode: int,
+        alert_state: int
+    ) -> None:
         """Configure a specified alert pin. Alert is enabled by default when alert is configured.
         To disable an alert pin, use :meth:`alert_disable`.
 
@@ -296,7 +307,7 @@ class MCP9600:
         setattr(self, "_alert_%d_state" % alert_number, alert_state)
         setattr(self, "_alert_%d_enable" % alert_number, True)
 
-    def alert_disable(self, alert_number):
+    def alert_disable(self, alert_number: int) -> None:
         """Configuring an alert using :meth:`alert_config` enables the specified alert by default.
         Use :meth:`alert_disable` to disable an alert pin.
 
@@ -307,7 +318,9 @@ class MCP9600:
             raise ValueError("Alert pin number must be 1-4.")
         setattr(self, "_alert_%d_enable" % alert_number, False)
 
-    def alert_interrupt_clear(self, alert_number, interrupt_clear=True):
+    def alert_interrupt_clear(
+        self, alert_number: int, interrupt_clear: bool = True
+    ) -> None:
         """Turns off the alert flag in the MCP9600, and clears the pin state (not used if the alert
         is in comparator mode). Required when ``alert_mode`` is ``INTERRUPT``.
 
@@ -320,13 +333,13 @@ class MCP9600:
         setattr(self, "_alert_%d_interrupt_clear" % alert_number, interrupt_clear)
 
     @property
-    def version(self):
+    def version(self) -> int:
         """ MCP9600 chip version """
         data = self._read_register(_REGISTER_VERSION, 2)
         return unpack(">xH", data)[0]
 
     @property
-    def ambient_temperature(self):
+    def ambient_temperature(self) -> float:
         """ Cold junction/ambient/room temperature in Celsius """
         data = self._read_register(_REGISTER_COLD_JUNCTION, 2)
         value = unpack(">xH", data)[0] * 0.0625
@@ -335,7 +348,7 @@ class MCP9600:
         return value
 
     @property
-    def temperature(self):
+    def temperature(self) -> float:
         """ Hot junction temperature in Celsius """
         data = self._read_register(_REGISTER_HOT_JUNCTION, 2)
         value = unpack(">xH", data)[0] * 0.0625
@@ -344,7 +357,7 @@ class MCP9600:
         return value
 
     @property
-    def delta_temperature(self):
+    def delta_temperature(self) -> float:
         """ Delta temperature in Celsius """
         data = self._read_register(_REGISTER_DELTA_TEMP, 2)
         value = unpack(">xH", data)[0] * 0.0625
@@ -352,7 +365,7 @@ class MCP9600:
             value -= 4096
         return value
 
-    def _read_register(self, reg, count=1):
+    def _read_register(self, reg: int, count: int = 1) -> bytearray:
         self.buf[0] = reg
         with self.i2c_device as i2c:
             i2c.write_then_readinto(self.buf, self.buf, out_end=count, in_start=1)
