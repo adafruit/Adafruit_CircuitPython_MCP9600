@@ -36,6 +36,8 @@ from adafruit_register.i2c_bits import RWBits, ROBits
 from adafruit_register.i2c_bit import RWBit, ROBit
 
 try:
+    # Used only for typing
+    import typing  # pylint: disable=unused-import
     from busio import I2C
 except ImportError:
     pass
