@@ -336,13 +336,13 @@ class MCP9600:
 
     @property
     def version(self) -> int:
-        """ MCP9600 chip version """
+        """MCP9600 chip version"""
         data = self._read_register(_REGISTER_VERSION, 2)
         return unpack(">xH", data)[0]
 
     @property
     def ambient_temperature(self) -> float:
-        """ Cold junction/ambient/room temperature in Celsius """
+        """Cold junction/ambient/room temperature in Celsius"""
         data = self._read_register(_REGISTER_COLD_JUNCTION, 2)
         value = unpack(">xH", data)[0] * 0.0625
         if data[1] & 0x80:
@@ -351,7 +351,7 @@ class MCP9600:
 
     @property
     def temperature(self) -> float:
-        """ Hot junction temperature in Celsius """
+        """Hot junction temperature in Celsius"""
         data = self._read_register(_REGISTER_HOT_JUNCTION, 2)
         value = unpack(">xH", data)[0] * 0.0625
         if data[1] & 0x80:
@@ -360,7 +360,7 @@ class MCP9600:
 
     @property
     def delta_temperature(self) -> float:
-        """ Delta temperature in Celsius """
+        """Delta temperature in Celsius"""
         data = self._read_register(_REGISTER_DELTA_TEMP, 2)
         value = unpack(">xH", data)[0] * 0.0625
         if data[1] & 0x80:
