@@ -217,7 +217,10 @@ class MCP9600:
         tcfilter: int = 0,
     ) -> None:
         self.buf = bytearray(3)
-        self.i2c_device = I2CDevice(i2c, address)
+        # Do not probe for the device with a zero-length write.
+        # The MCP960x does not like zero-length writes and will usually NAK,
+        # unless the write is rapidly repeated.
+        self.i2c_device = I2CDevice(i2c, address, probe=False)
         self.type = tctype
         # is this a valid thermocouple type?
         if tctype not in MCP9600.types:
