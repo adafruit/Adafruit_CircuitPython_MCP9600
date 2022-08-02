@@ -13,6 +13,10 @@ Introduction
     :target: https://github.com/adafruit/Adafruit_CircuitPython_MCP9600/actions/
     :alt: Build Status
 
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :target: https://github.com/psf/black
+    :alt: Code Style: Black
+
 This is a CircuitPython driver for the MCP9600 thermocouple I2C amplifier.
 In addition to the MCP9600 breakout, you will also need a thermocouple, which
 can be found in the Adafruit store.
