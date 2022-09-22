@@ -363,7 +363,10 @@ class MCP9600:
 
     @property
     def delta_temperature(self) -> float:
-        """Delta temperature in Celsius"""
+        """
+        Delta between hot junction (thermocouple probe) and
+        cold junction (ambient/room) temperatures in Celsius
+        """
         data = self._read_register(_REGISTER_DELTA_TEMP, 2)
         value = unpack(">xH", data)[0] * 0.0625
         if data[1] & 0x80:
