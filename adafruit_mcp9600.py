@@ -224,7 +224,7 @@ class MCP9600:
         self.type = tctype
         # is this a valid thermocouple type?
         if tctype not in MCP9600.types:
-            raise Exception("invalid thermocouple type ({})".format(tctype))
+            raise ValueError("invalid thermocouple type ({})".format(tctype))
         # filter is from 0 (none) to 7 (max), can limit spikes in
         # temperature readings
         tcfilter = min(7, max(0, tcfilter))
