@@ -381,12 +381,13 @@ class MCP9600:
 
     def set_ambient_resolution(self, resolution):
         """
-        Sets the ambient (cold-junction) temperature sensor resolution.
         :param resolution: Either AMBIENT_RESOLUTION_0_0625 (0.0625°C)
-                           or AMBIENT_RESOLUTION_0_25 (0.25°C).
+                            or AMBIENT_RESOLUTION_0_25 (0.25°C).
         """
-        if resolution not in [self.AMBIENT_RESOLUTION_0_0625, self.AMBIENT_RESOLUTION_0_25]:
-            raise ValueError("Resolution must be AMBIENT_RESOLUTION_0_0625 or AMBIENT_RESOLUTION_0_25")
-        
-        # Set the register bit based on the resolution
-        self.ambient_resolution = resolution
+        if resolution not in [
+            self.AMBIENT_RESOLUTION_0_0625,
+            self.AMBIENT_RESOLUTION_0_25,
+        ]:
+            raise ValueError(
+                "Resolution must be AMBIENT_RESOLUTION_0_0625 or AMBIENT_RESOLUTION_0_25"
+            )
