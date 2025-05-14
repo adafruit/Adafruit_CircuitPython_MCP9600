@@ -29,15 +29,17 @@ Implementation Notes
 """
 
 from struct import unpack
-from micropython import const
+
 from adafruit_bus_device.i2c_device import I2CDevice
+from adafruit_register.i2c_bit import ROBit, RWBit
+from adafruit_register.i2c_bits import ROBits, RWBits
 from adafruit_register.i2c_struct import UnaryStruct
-from adafruit_register.i2c_bits import RWBits, ROBits
-from adafruit_register.i2c_bit import RWBit, ROBit
+from micropython import const
 
 try:
     # Used only for typing
-    import typing  # pylint: disable=unused-import
+    import typing
+
     from busio import I2C
 except ImportError:
     pass
@@ -224,7 +226,7 @@ class MCP9600:
         self.type = tctype
         # is this a valid thermocouple type?
         if tctype not in MCP9600.types:
-            raise ValueError("invalid thermocouple type ({})".format(tctype))
+            raise ValueError(f"invalid thermocouple type ({tctype})")
         # filter is from 0 (none) to 7 (max), can limit spikes in
         # temperature readings
         tcfilter = min(7, max(0, tcfilter))
@@ -234,7 +236,7 @@ class MCP9600:
         self.buf[1] = tcfilter | (ttype << 4)
         with self.i2c_device as tci2c:
             tci2c.write(self.buf, end=2)
-        if self._device_id not in (0x40, 0x41):
+        if self._device_id not in {0x40, 0x41}:
             raise RuntimeError("Failed to find MCP9600 or MCP9601 - check wiring!")
 
     def alert_config(
@@ -246,7 +248,7 @@ class MCP9600:
         alert_hysteresis: float,
         alert_temp_direction: int,
         alert_mode: int,
-        alert_state: int
+        alert_state: int,
     ) -> None:
         """Configure a specified alert pin. Alert is enabled by default when alert is configured.
         To disable an alert pin, use :meth:`alert_disable`.
@@ -296,7 +298,7 @@ class MCP9600:
                              alert_state=mcp.ACTIVE_LOW)
 
         """
-        if alert_number not in (1, 2, 3, 4):
+        if alert_number not in {1, 2, 3, 4}:
             raise ValueError("Alert pin number must be 1-4.")
         if not 0 <= alert_hysteresis < 256:
             raise ValueError("Hysteresis value must be 0-255.")
@@ -319,13 +321,11 @@ class MCP9600:
         :param int alert_number: The alert pin number. Must be 1-4.
 
         """
-        if alert_number not in (1, 2, 3, 4):
+        if alert_number not in {1, 2, 3, 4}:
             raise ValueError("Alert pin number must be 1-4.")
         setattr(self, "_alert_%d_enable" % alert_number, False)
 
-    def alert_interrupt_clear(
-        self, alert_number: int, interrupt_clear: bool = True
-    ) -> None:
+    def alert_interrupt_clear(self, alert_number: int, interrupt_clear: bool = True) -> None:
         """Turns off the alert flag in the MCP9600, and clears the pin state (not used if the alert
         is in comparator mode). Required when ``alert_mode`` is ``INTERRUPT``.
 
@@ -333,7 +333,7 @@ class MCP9600:
         :param bool interrupt_clear: The bit to write the interrupt state flag
 
         """
-        if alert_number not in (1, 2, 3, 4):
+        if alert_number not in {1, 2, 3, 4}:
             raise ValueError("Alert pin number must be 1-4.")
         setattr(self, "_alert_%d_interrupt_clear" % alert_number, interrupt_clear)
 
