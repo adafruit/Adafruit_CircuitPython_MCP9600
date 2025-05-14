@@ -2,8 +2,10 @@
 # SPDX-License-Identifier: MIT
 
 import time
+
 import board
 import busio
+
 import adafruit_mcp9600
 
 i2c = busio.I2C(board.SCL, board.SDA, frequency=100000)
