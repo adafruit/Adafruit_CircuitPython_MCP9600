@@ -302,17 +302,17 @@ class MCP9600:
             raise ValueError("Alert pin number must be 1-4.")
         if not 0 <= alert_hysteresis < 256:
             raise ValueError("Hysteresis value must be 0-255.")
-        setattr(self, "_alert_%d_monitor" % alert_number, alert_temp_source)
+        setattr(self, f"_alert_{alert_number}_monitor", alert_temp_source)
         setattr(
             self,
-            "_alert_%d_temperature_limit" % alert_number,
+            f"_alert_{alert_number}_temperature_limit",
             int(alert_temp_limit / 0.0625),
         )
-        setattr(self, "_alert_%d_hysteresis" % alert_number, alert_hysteresis)
-        setattr(self, "_alert_%d_temp_direction" % alert_number, alert_temp_direction)
-        setattr(self, "_alert_%d_mode" % alert_number, alert_mode)
-        setattr(self, "_alert_%d_state" % alert_number, alert_state)
-        setattr(self, "_alert_%d_enable" % alert_number, True)
+        setattr(self, f"_alert_{alert_number}_hysteresis", alert_hysteresis)
+        setattr(self, f"_alert_{alert_number}_temp_direction", alert_temp_direction)
+        setattr(self, f"_alert_{alert_number}_mode", alert_mode)
+        setattr(self, f"_alert_{alert_number}_state", alert_state)
+        setattr(self, f"_alert_{alert_number}_enable", True)
 
     def alert_disable(self, alert_number: int) -> None:
         """Configuring an alert using :meth:`alert_config` enables the specified alert by default.
@@ -323,7 +323,7 @@ class MCP9600:
         """
         if alert_number not in {1, 2, 3, 4}:
             raise ValueError("Alert pin number must be 1-4.")
-        setattr(self, "_alert_%d_enable" % alert_number, False)
+        setattr(self, f"_alert_{alert_number}_enable", False)
 
     def alert_interrupt_clear(self, alert_number: int, interrupt_clear: bool = True) -> None:
         """Turns off the alert flag in the MCP9600, and clears the pin state (not used if the alert
@@ -335,7 +335,7 @@ class MCP9600:
         """
         if alert_number not in {1, 2, 3, 4}:
             raise ValueError("Alert pin number must be 1-4.")
-        setattr(self, "_alert_%d_interrupt_clear" % alert_number, interrupt_clear)
+        setattr(self, f"_alert_{alert_number}_interrupt_clear", interrupt_clear)
 
     @property
     def version(self) -> int:
